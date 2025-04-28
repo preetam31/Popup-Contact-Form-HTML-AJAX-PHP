@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Popup Contact Form</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="80x80" href="assets/images/favicon.png">
+    <!-- Main CSS -->
+    <link href="assets/css/main.css" rel="stylesheet">
+     <link href="assets/css/form.css" rel="stylesheet">
+    
+    
+</head>
+
+<body>
+    <!-- page content area -->
+    <div class="pagewrap">
+        <div class="head-wrapper">
+            <!-- header section -->
+           
+            
+<div class="container">
+            <div class="row">
+			<div class="col-4">
+			</div>
+			<div class="col-4">
+                                <div class="d-flex justify-content-between"><br>
+                                    
+                                    
+                                    	
+                     <button onclick="openPopup()">Contact Us</button>               
+                                     
+                                         
+                                    
+                                    
+                                </div>
+                            </div> 
+							<div class="col-4">
+			</div>
+							</div> </div>
+                
+    <!-- js file -->
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    
+    <!--form start-->
+    <!-- Popup Form -->
+<div class="popup-container" id="popupForm">
+    <div class="popup-content">
+        <span class="close-icon" onclick="closePopup()">&times;</span> <!-- Close icon -->
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+            <div>
+                <input type="text" id="name" name="name" placeholder="Your Name">
+                <div id="nameError" class="error"></div>
+            </div>
+            <div>
+                <input type="email" id="email" name="email" placeholder="Your Email">
+                <div id="emailError" class="error"></div>
+            </div>
+            <div>
+                <input type="text" id="phone" name="phone" placeholder="Your Phone">
+                <div id="phoneError" class="error"></div>
+            </div>
+            <div>
+                <textarea id="message" name="message" rows="4" placeholder="Your Message"></textarea>
+                <div id="messageError" class="error"></div>
+            </div>
+            <button type="submit">Submit</button>
+            <div id="formSuccess" class="success-message">Thank you for contacting us! We will get back to you soon.</div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Function to open the popup
+    function openPopup() {
+        document.getElementById("popupForm").style.display = "flex";
+    }
+
+    // Function to close the popup
+    function closePopup() {
+        document.getElementById("popupForm").style.display = "none";
+    }
+
+    // Form validation and AJAX submission
+    document.getElementById("contactForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form from submitting normally
+        
+        // Clear previous errors
+        clearErrors();
+
+        // Get form values
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const message = document.getElementById("message").value;
+
+        let valid = true;
+
+        // Validate the form fields
+        if (name.trim() === "") {
+            showError("nameError", "Name is required.");
+            valid = false;
+        }
+        if (email.trim() === "" || !validateEmail(email)) {
+            showError("emailError", "A valid email is required.");
+            valid = false;
+        }
+        if (phone.trim() === "" || !validatePhone(phone)) {
+            showError("phoneError", "A valid phone number is required.");
+            valid = false;
+        }
+        if (message.trim() === "") {
+            showError("messageError", "Message is required.");
+            valid = false;
+        }
+
+        if (valid) {
+            // Send the form data using AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "submit_contact.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Check if the response is a success
+                    if (xhr.responseText === "Success") {
+                        // Show success message
+                        document.getElementById("formSuccess").style.display = "block";
+                        document.getElementById("contactForm").reset();
+                    } else {
+                        alert("There was an error: " + xhr.responseText);
+                    }
+                } else {
+                    alert("There was an error submitting the form.");
+                }
+            };
+
+            xhr.send("name=" + encodeURIComponent(name) +
+                     "&email=" + encodeURIComponent(email) +
+                     "&phone=" + encodeURIComponent(phone) +
+                     "&message=" + encodeURIComponent(message));
+        }
+    });
+
+    // Helper function to show error messages
+    function showError(elementId, message) {
+        document.getElementById(elementId).textContent = message;
+    }
+
+    // Helper function to clear error messages
+    function clearErrors() {
+        document.getElementById("nameError").textContent = "";
+        document.getElementById("emailError").textContent = "";
+        document.getElementById("phoneError").textContent = "";
+        document.getElementById("messageError").textContent = "";
+    }
+
+    // Simple email validation
+    function validateEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+    // Simple phone number validation
+    function validatePhone(phone) {
+        const regex = /^[0-9]{10}$/;
+        return regex.test(phone);
+    }
+</script>
+    
+</body>
+
+</html>
